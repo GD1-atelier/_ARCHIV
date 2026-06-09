@@ -13,24 +13,28 @@
       src: url('fonts/HelveticaNeueRoman.otf') format('opentype');
       font-weight: 400;
       font-style: normal;
+      font-display: swap;
     }
     @font-face {
       font-family: 'Helvetica Neue';
       src: url('fonts/HelveticaNeueMedium.otf') format('opentype');
       font-weight: 500;
       font-style: normal;
+      font-display: swap;
     }
     @font-face {
       font-family: 'Meltmino';
       src: url('fonts/Meltmino-Regular.otf') format('opentype');
       font-weight: 400;
       font-style: normal;
+      font-display: swap;
     }
     @font-face {
       font-family: 'Meltmino';
       src: url('fonts/Meltmino-Medium.otf') format('opentype');
       font-weight: 500;
       font-style: normal;
+      font-display: swap;
     }
 
     :root {
@@ -41,6 +45,10 @@
       --fluo: #FF4709;
       --wall-offset: 8vw; /* Vráceno na původní šířku chodby */
       --perspective: 520px;
+      --left-wall-angle: 90deg;
+      --right-wall-angle: -90deg;
+      --scene-scale: 1;
+      --scene-y: 0px;
       --bar-h: 56px;
     }
 
@@ -427,12 +435,15 @@
       perspective: var(--perspective);
       perspective-origin: 50% 50%;
       background: #000;
+      touch-action: none;
     }
 
     .tunnel-scene {
       position: absolute;
       inset: 0;
       transform-style: preserve-3d;
+      transform: translateY(var(--scene-y)) scale(var(--scene-scale));
+      transform-origin: center center;
     }
 
     .tunnel-wall {
@@ -445,8 +456,8 @@
       backface-visibility: hidden;
     }
 
-    .w-left-tunnel { left: var(--wall-offset); transform-origin: left center; transform: rotateY(90deg); }
-    .w-right-tunnel { right: var(--wall-offset); transform-origin: right center; transform: rotateY(-90deg) scaleX(-1); }
+    .w-left-tunnel { left: var(--wall-offset); transform-origin: left center; transform: rotateY(var(--left-wall-angle)); }
+    .w-right-tunnel { right: var(--wall-offset); transform-origin: right center; transform: rotateY(var(--right-wall-angle)) scaleX(-1); }
 
     .tunnel-track {
       position: absolute;
@@ -470,7 +481,6 @@
       box-shadow: none;
       transform-style: preserve-3d;
       transform-origin: center center;
-      will-change: transform;
       backface-visibility: hidden;
       contain: layout paint style;
     }
@@ -501,6 +511,189 @@
       transition: opacity 0.4s ease, visibility 0.4s ease;
     }
     .preloader.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    @media (min-width: 1440px) {
+      :root {
+        --wall-offset: 10vw;
+        --perspective: 590px;
+      }
+
+      .nav-bar { padding: 0 52px; }
+      .floating-address { left: 34%; }
+      .bottom-interface { bottom: 54px; }
+      .menu-headline { font-size: clamp(58px, 4.8vw, 88px); }
+    }
+
+    @media (max-width: 1024px) {
+      :root {
+        --wall-offset: 14vw;
+        --perspective: 660px;
+        --left-wall-angle: 80deg;
+        --right-wall-angle: -80deg;
+        --scene-scale: 0.94;
+      }
+
+      body.menu-open .nav-panel { height: 100dvh; }
+      .nav-bar { padding: 0 24px; }
+      .menu-content {
+        grid-template-columns: 1fr;
+        gap: 34px;
+        height: calc(100dvh - var(--bar-h));
+        padding: 28px 24px 40px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .menu-col-left,
+      .menu-col-right {
+        padding-right: 0;
+        gap: 28px;
+      }
+      .menu-headline {
+        font-size: clamp(38px, 8vw, 72px);
+        margin-bottom: 28px;
+      }
+      .text-grid-row {
+        grid-template-columns: 92px 1fr;
+        gap: 18px;
+      }
+      .row-content {
+        max-width: 680px;
+        font-size: 13px;
+      }
+      .floating-address {
+        top: 82px;
+        left: 24px;
+      }
+      .bottom-interface {
+        bottom: max(22px, env(safe-area-inset-bottom));
+        padding: 0 24px;
+      }
+      .bottom-strict-grid {
+        width: min(100%, 430px);
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+      .btn {
+        width: 100%;
+        height: 68px;
+        font-size: clamp(17px, 2.4vw, 20px);
+        padding: 0 18px;
+      }
+      .bottom-desc {
+        width: min(100%, 380px);
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      :root {
+        --bar-h: 52px;
+        --wall-offset: 24vw;
+        --perspective: 820px;
+        --left-wall-angle: 70deg;
+        --right-wall-angle: -70deg;
+        --scene-scale: 0.88;
+        --scene-y: -1.5vh;
+      }
+
+      .nav-bar { padding: 0 16px; }
+      .nav-corner-title { font-size: 11px; }
+      .menu-toggle,
+      .menu-lines { width: 34px; }
+      .menu-content { padding: 22px 16px 92px; }
+      .menu-headline {
+        font-size: clamp(31px, 11vw, 50px);
+        line-height: 1;
+      }
+      .text-grid-row {
+        display: block;
+        margin-bottom: 24px;
+      }
+      .row-label {
+        display: block;
+        margin-bottom: 10px;
+      }
+      .row-content,
+      .contact-email {
+        font-size: 12px;
+      }
+      .row-content br,
+      .contact-intro-text br,
+      .newsletter-text br,
+      .bottom-desc br,
+      .underline-text br {
+        display: none;
+      }
+      .newsletter-headline { font-size: 22px; }
+      .floating-address {
+        top: 76px;
+        left: 16px;
+        max-width: calc(100vw - 32px);
+        font-size: 9px;
+      }
+      .bottom-interface {
+        bottom: max(14px, env(safe-area-inset-bottom));
+        padding: 0 14px;
+      }
+      .bottom-strict-grid {
+        width: 100%;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-areas:
+          "hint hint"
+          "btn-left btn-right"
+          "desc desc";
+      }
+      .scroll-hint-text {
+        font-size: 11px;
+        margin-bottom: 9px;
+      }
+      .btn {
+        height: 58px;
+        min-width: 0;
+        padding: 0 12px;
+        font-size: clamp(14px, 4.3vw, 17px);
+      }
+      .svg-arrow-up,
+      .svg-arrow-up-right {
+        width: 20px;
+        height: 20px;
+      }
+      .bottom-desc {
+        width: 100%;
+        max-width: 340px;
+        justify-self: end;
+        margin-top: 10px;
+        font-size: 11px;
+        line-height: 1.3;
+      }
+    }
+
+    @media (max-width: 420px) {
+      :root {
+        --wall-offset: 29vw;
+        --perspective: 900px;
+        --left-wall-angle: 66deg;
+        --right-wall-angle: -66deg;
+        --scene-scale: 0.84;
+      }
+
+      .bottom-desc { max-width: 300px; }
+    }
+
+    @media (hover: none) {
+      .menu-toggle:hover .menu-line { background: currentColor; }
+      .hover-target:hover,
+      .hover-target:hover .underline-text {
+        color: inherit;
+      }
+      .btn-white:hover {
+        background: var(--white);
+        border-color: var(--white);
+      }
+      .btn-outline:hover {
+        border-color: var(--white);
+        color: var(--white);
+      }
+    }
 
   </style>
 </head>
@@ -582,12 +775,12 @@
         SCROLL. FEEL THE VISION.<br>ENTER THE SPACE.
       </div>
       
-      <button class="btn btn-white" onclick="window.open('https://ludmiaaa.tumblr.com/', '_blank')">
+      <button class="btn btn-white" type="button" onclick="window.open('https://gd1archive.tumblr.com/index', '_blank')">
         <span class="btn-text">ENTER<br>ARCHIV</span>
         <svg class="svg-arrow svg-arrow-up" viewBox="0 0 24 24"><path d="M12 21V4M6 10l6-6 6 6"/></svg>
       </button>
       
-      <button class="btn btn-outline" onclick="window.open('https://www.instagram.com/gd1_fud/', '_blank')">
+      <button class="btn btn-outline" type="button" onclick="window.open('https://www.instagram.com/gd1_fud/', '_blank')">
         <span class="btn-text">ENTER<br>INSTAGRAM</span>
         <svg class="svg-arrow svg-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg>
       </button>
@@ -616,25 +809,112 @@
     /* =========================================================
        KONFIGURACE - VÝKONOVÁ OPRAVA (Bez sekání, stejný vizuál)
        ========================================================= */
+    function getViewportProfile() {
+      const width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+      const coarse = window.matchMedia("(pointer: coarse)").matches;
+
+      if (width <= 700) {
+        return {
+          blockLength: 4700,
+          scrollSpeed: 1.75,
+          maxPreparedVideos: 4,
+          maxPlayingVideos: 2,
+          videoPrepareDistance: 3600,
+          videoPlayDistance: 3000,
+          warmupCriticalVideos: 0,
+          retryIntervalMs: 520,
+          cardScale: width <= 420 ? 0.68 : 0.74,
+          heroScale: 0.82,
+          rightOffsetRatio: 0.23,
+          rightRhythm: 1.08,
+          focusPoint: 950,
+          initialImageCount: 8,
+          dragMultiplier: coarse ? 3.1 : 3.8,
+        };
+      }
+
+      if (width <= 1024) {
+        return {
+          blockLength: 5000,
+          scrollSpeed: 1.95,
+          maxPreparedVideos: 6,
+          maxPlayingVideos: 3,
+          videoPrepareDistance: 4700,
+          videoPlayDistance: 3900,
+          warmupCriticalVideos: 1,
+          retryIntervalMs: 500,
+          cardScale: 0.86,
+          heroScale: 0.94,
+          rightOffsetRatio: 0.3,
+          rightRhythm: 1.16,
+          focusPoint: 1350,
+          initialImageCount: 10,
+          dragMultiplier: coarse ? 3.4 : 4,
+        };
+      }
+
+      return {
+        blockLength: width >= 1440 ? 5900 : 5400,
+        scrollSpeed: width >= 1440 ? 2.05 : 2.2,
+        maxPreparedVideos: width >= 1440 ? 10 : 8,
+        maxPlayingVideos: width >= 1440 ? 5 : 4,
+        videoPrepareDistance: width >= 1440 ? 7200 : 6200,
+        videoPlayDistance: width >= 1440 ? 5600 : 5000,
+        warmupCriticalVideos: 2,
+        retryIntervalMs: 450,
+        cardScale: width >= 1440 ? 1.06 : 1,
+        heroScale: width >= 1440 ? 1.08 : 1,
+        rightOffsetRatio: 0.37,
+        rightRhythm: 1.29,
+        focusPoint: 1900,
+        initialImageCount: 12,
+        dragMultiplier: 4,
+      };
+    }
+
     const CONFIG = {
-      blockLength: 5400,
       cloneCount: 3,
-      scrollSpeed: 2.25,
       leftSeed: 113,
       rightSeed: 1291,
-      maxPreparedVideos: 12, // Bezpečnější limit paměti
-      maxPlayingVideos: 6,   // SNÍŽENO: Toto je to jediné, co způsobovalo sekání. Vizuálně jich tam bude pořád tolik, ale jen 6 jich aktivně hraje.
-      videoPrepareDistance: 9000,
-      videoPlayDistance: 6000,
-      warmupCriticalVideos: 6,
-      preloaderMinimumMs: 1200,
-      retryIntervalMs: 250, 
+      preloaderMinimumMs: 650,
+      ...getViewportProfile(),
     };
 
+    function tuneDeliveryUrl(url) {
+      const imageWidth = CONFIG.cardScale < 0.8 ? 900 : CONFIG.cardScale < 1 ? 1100 : 1300;
+      const videoWidth = CONFIG.cardScale < 0.8 ? 760 : CONFIG.cardScale < 1 ? 960 : 1100;
+
+      if (url.includes("/video/upload/")) {
+        return url.replace("f_auto,q_auto,w_1200,c_limit", `f_auto,q_auto:eco,w_${videoWidth},c_limit`);
+      }
+      return url.replace("f_auto,q_auto,w_1200,c_limit", `f_auto,q_auto,w_${imageWidth},c_limit`);
+    }
+
     const files = [
-      ...Array.from({ length: 15 }, (_, i) => `assets/${String(i + 1).padStart(2, "0")}.webp`),
-      ...[16, 17, 19, 20, 21, 22, 23, 24].map((n) => `assets/${String(n).padStart(2, "0")}.mp4`),
-    ];
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030413/01_gytbsf.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030426/02_vkwpqh.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030437/03_ahoqzd.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030443/04_oqak7o.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030450/05_tmbidh.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030455/06_i1dpdh.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030466/07_g4n2ga.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030471/08_a61vs0.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030481/09_i7nvjw.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030491/10_t2kc55.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030495/11_yzad3q.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030500/12_icqlbh.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030504/13_mgfrdq.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030552/14_qai5pb.webp",
+      "https://res.cloudinary.com/dic1fjncp/image/upload/f_auto,q_auto,w_1200,c_limit/v1781030562/15_nrknbl.webp",
+      "https://res.cloudinary.com/dic1fjncp/video/upload/f_auto,q_auto,w_1200,c_limit/v1781030588/16_f4dsqq.mp4",
+      "https://res.cloudinary.com/dic1fjncp/video/upload/f_auto,q_auto,w_1200,c_limit/v1781030608/17_trpqqy.mp4",
+      "https://res.cloudinary.com/dic1fjncp/video/upload/f_auto,q_auto,w_1200,c_limit/v1781030626/19_mgfi1g.mp4",
+      "https://res.cloudinary.com/dic1fjncp/video/upload/f_auto,q_auto,w_1200,c_limit/v1781030637/20_hrwrjm.mp4",
+      "https://res.cloudinary.com/dic1fjncp/video/upload/f_auto,q_auto,w_1200,c_limit/v1781030648/21_fx9cbk.mp4",
+      "https://res.cloudinary.com/dic1fjncp/video/upload/f_auto,q_auto,w_1200,c_limit/v1781030663/22_qcwa00.mp4",
+      "https://res.cloudinary.com/dic1fjncp/video/upload/f_auto,q_auto,w_1200,c_limit/v1781030679/23_pyw1ya.mp4",
+      "https://res.cloudinary.com/dic1fjncp/video/upload/f_auto,q_auto,w_1200,c_limit/v1781030698/24_bckhnd.mp4",
+    ].map(tuneDeliveryUrl);
 
     function seededRandom(seed) {
       let value = seed % 2147483647;
@@ -671,12 +951,17 @@
       const shuffled = shuffleStable(baseOrder, random);
       const items = [];
       
-      const lanes = side === "right"
-        ? [-3, 4, 12, 23, 35, 48, 62, 76, 90, 103]
-        : [-4, 5, 15, 27, 39, 52, 66, 80, 94, 104];
+      const narrow = CONFIG.cardScale < 0.8;
+      const lanes = narrow
+        ? (side === "right"
+          ? [-4, 8, 22, 38, 54, 70, 86, 101]
+          : [-6, 6, 20, 36, 52, 68, 84, 100])
+        : (side === "right"
+          ? [-3, 4, 12, 23, 35, 48, 62, 76, 90, 103]
+          : [-4, 5, 15, 27, 39, 52, 66, 80, 94, 104]);
         
       const minGap = CONFIG.blockLength / shuffled.length;
-      const sideOffset = side === "right" ? CONFIG.blockLength * 0.37 : CONFIG.blockLength * 0.08;
+      const sideOffset = side === "right" ? CONFIG.blockLength * CONFIG.rightOffsetRatio : CONFIG.blockLength * 0.08;
 
       shuffled.forEach((path, index) => {
         const isVideo = path.endsWith(".mp4");
@@ -687,6 +972,9 @@
         let width = isHero ? 710 + random() * 310 : 335 + random() * 405;
         let height = isHero ? 495 + random() * 300 : 290 + random() * 380;
 
+        width *= isHero ? CONFIG.cardScale * CONFIG.heroScale : CONFIG.cardScale;
+        height *= isHero ? CONFIG.cardScale * CONFIG.heroScale : CONFIG.cardScale;
+
         if (isVideo) { width *= 1.08; height *= 1.02; }
         if (isTall) { height *= 1.32; width *= 0.86; }
         if (isWide) { width *= 1.32; height *= 0.82; }
@@ -696,7 +984,7 @@
 
         const lane = lanes[(index * 5 + Math.floor(random() * lanes.length)) % lanes.length];
         const top = Math.max(-8, Math.min(108, lane + (random() * 12 - 6)));
-        const rhythm = side === "right" ? 1.29 : 1;
+        const rhythm = side === "right" ? CONFIG.rightRhythm : 1;
         const left = (sideOffset + index * minGap * rhythm + random() * minGap * 0.92) % CONFIG.blockLength;
         const z = Math.round(random() * 270 - 135); 
         const rotate = (random() * 4.25 - 2.125).toFixed(2);
@@ -713,14 +1001,13 @@
         return `
           <video
             class="t-media t-video"
-            src="${item.path}"
             data-src="${item.path}"
             muted defaultMuted loop autoplay playsinline webkit-playsinline
-            preload="metadata" disablepictureinpicture
+            preload="none" disablepictureinpicture
             controlslist="nodownload noplaybackrate noremoteplayback"
           ></video>`;
       }
-      return `<img class="t-media" src="${item.path}" alt="" decoding="async" fetchpriority="low" />`;
+      return `<img class="t-media" src="${item.path}" alt="" loading="lazy" decoding="async" fetchpriority="low" />`;
     }
 
     function generateTunnel(trackId, seed, side, flipMedia = false) {
@@ -746,6 +1033,51 @@
 
     generateTunnel("tunnel-track-left", CONFIG.leftSeed, "left", false);
     generateTunnel("tunnel-track-right", CONFIG.rightSeed, "right", true);
+
+    function getInitialImageElements(limit = CONFIG.initialImageCount) {
+      return [...document.querySelectorAll(".t-card:not([data-video='1'])")]
+        .map((card) => {
+          const left = Number(card.dataset.left);
+          const position = left - CONFIG.blockLength;
+          return { card, score: Math.abs(position - CONFIG.focusPoint) };
+        })
+        .sort((a, b) => a.score - b.score)
+        .slice(0, limit)
+        .map(({ card }) => card.querySelector("img.t-media"))
+        .filter(Boolean);
+    }
+
+    function prioritizeInitialImages() {
+      getInitialImageElements().forEach((image) => {
+        image.loading = "eager";
+        image.fetchPriority = "high";
+      });
+    }
+
+    function waitForImage(image, timeout = 1700) {
+      return new Promise((resolve) => {
+        if (image.complete && image.naturalWidth > 0) { resolve(); return; }
+        let done = false;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          image.removeEventListener("load", finish);
+          image.removeEventListener("error", finish);
+          resolve();
+        };
+        image.addEventListener("load", finish, { once: true });
+        image.addEventListener("error", finish, { once: true });
+        window.setTimeout(finish, timeout);
+      });
+    }
+
+    function waitForInitialImages() {
+      const images = getInitialImageElements();
+      if (!images.length) return Promise.resolve();
+      return Promise.allSettled(images.map((image) => waitForImage(image)));
+    }
+
+    prioritizeInitialImages();
 
     const preloader = document.getElementById("preloader");
     const menuToggle = document.getElementById("menuToggle");
@@ -786,19 +1118,21 @@
       });
 
       video.addEventListener("playing", () => { entry.playing = true; });
-      video.addEventListener("pause", () => { entry.playing = false; });
+      video.addEventListener("pause", () => {
+        entry.playing = false;
+        if (entry.wantsPlay && !document.hidden) {
+          window.setTimeout(() => attemptPlay(entry, true), 140);
+        }
+      });
       video.addEventListener("ended", () => {
         entry.playing = false;
-        if (!entry.wantsPlay) return;
-        try { video.currentTime = 0; } catch (error) {}
-        attemptPlay(entry, true);
+        restartVideo(entry);
       });
 
       video.addEventListener("timeupdate", () => {
         if (!entry.wantsPlay || !Number.isFinite(video.duration) || video.duration <= 0) return;
         if (video.currentTime >= video.duration - 0.08) {
-          try { video.currentTime = 0; } catch (error) {}
-          attemptPlay(entry, true);
+          restartVideo(entry);
         }
       });
 
@@ -810,6 +1144,7 @@
     let currentMovement = 0;
     let rafId = null;
     let scrollTimeout = null;
+    let lastVideoManageAt = 0;
 
     function clampScroll(value) {
       const max = CONFIG.blockLength * 1000;
@@ -864,8 +1199,6 @@
 
     function warmVideoCache() {
       const criticalVideos = uniqueVideoPaths.slice(0, CONFIG.warmupCriticalVideos);
-      const restVideos = uniqueVideoPaths.slice(CONFIG.warmupCriticalVideos);
-
       const criticalPromises = criticalVideos.map((src, index) => {
         addPreloadHint(src);
         return new Promise((resolve) => {
@@ -876,17 +1209,6 @@
         });
       });
 
-      const warmRest = () => {
-        restVideos.forEach((src, index) => {
-          window.setTimeout(() => warmSingleVideo(src, false), index * 360);
-        });
-      };
-
-      if ("requestIdleCallback" in window) {
-        requestIdleCallback(warmRest, { timeout: 1800 });
-      } else {
-        window.setTimeout(warmRest, 1200);
-      }
       return Promise.allSettled(criticalPromises);
     }
 
@@ -904,11 +1226,25 @@
       }
     }
 
-    function pauseVideo(entry) {
+    function pauseVideo(entry, release = false) {
       const { video } = entry;
       entry.wantsPlay = false;
       if (!video.paused) video.pause();
       entry.playing = false;
+      if (release && entry.prepared) {
+        video.removeAttribute("src");
+        video.load();
+        entry.prepared = false;
+      }
+    }
+
+    function restartVideo(entry) {
+      const { video } = entry;
+      if (!entry.wantsPlay || document.hidden) return;
+      try {
+        video.currentTime = 0;
+      } catch (error) {}
+      attemptPlay(entry, true);
     }
 
     function attemptPlay(entry, immediate = false) {
@@ -928,7 +1264,14 @@
 
       const promise = video.play();
       if (promise && typeof promise.then === "function") {
-        promise.then(() => { entry.playing = true; }).catch(() => { entry.playing = false; });
+        promise
+          .then(() => { entry.playing = true; })
+          .catch(() => {
+            entry.playing = false;
+            if (entry.wantsPlay && !document.hidden) {
+              window.setTimeout(() => attemptPlay(entry, true), 480);
+            }
+          });
       }
     }
 
@@ -941,10 +1284,10 @@
       videoEntries.forEach((entry) => {
         const position = effectiveCardPosition(entry, currentMovement);
         const inPrepareRange = position > -2000 && position < CONFIG.videoPrepareDistance;
-        if (!inPrepareRange) { pauseVideo(entry); return; }
+        if (!inPrepareRange) { pauseVideo(entry, true); return; }
         
         const playScore = Math.abs(position - 1900);
-        const inPlayRange = position > -2500 && position < 8000;
+        const inPlayRange = position > -1800 && position < CONFIG.videoPlayDistance;
         candidates.push({ entry, playScore, inPlayRange });
       });
       return candidates;
@@ -966,6 +1309,13 @@
       });
     }
 
+    function requestVideoManagement(force = false) {
+      const now = performance.now();
+      if (!force && now - lastVideoManageAt < 220) return;
+      lastVideoManageAt = now;
+      manageVideos(force);
+    }
+
     function prepareInitialVisibleVideos() {
       const candidates = getVideoCandidates()
         .filter((candidate) => candidate.inPlayRange)
@@ -983,7 +1333,10 @@
     function setScrollingState() {
       document.body.classList.add("is-scrolling");
       clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => { document.body.classList.remove("is-scrolling"); }, 150);
+      scrollTimeout = setTimeout(() => {
+        document.body.classList.remove("is-scrolling");
+        requestVideoManagement(true);
+      }, 150);
     }
 
     function requestRender() {
@@ -1000,6 +1353,8 @@
       tracks.forEach((track) => {
         track.style.transform = `translate3d(${x}px, 0, 0)`;
       });
+
+      requestVideoManagement(false);
 
       if (Math.abs(scrollTarget - scrollCurrent) > 0.2) {
         requestRender();
@@ -1019,23 +1374,30 @@
       requestRender();
     }, { passive: false });
 
+    function isInterfaceTarget(target) {
+      return Boolean(target.closest(".nav-panel, .bottom-interface, a, button"));
+    }
+
     let pointerStartY = null;
-    window.addEventListener("pointerdown", (event) => { 
+    window.addEventListener("pointerdown", (event) => {
+      if (isInterfaceTarget(event.target)) return;
       pointerStartY = event.clientY; 
-    });
+    }, { passive: true });
 
     window.addEventListener("pointermove", (event) => {
       if (pointerStartY === null || document.body.classList.contains("menu-open")) return;
       const delta = pointerStartY - event.clientY;
       if(Math.abs(delta) > 5) {
+        event.preventDefault();
         pointerStartY = event.clientY;
-        scrollTarget = clampScroll(scrollTarget + delta * 4);
+        scrollTarget = clampScroll(scrollTarget + delta * CONFIG.dragMultiplier);
         setScrollingState(); 
         requestRender();
       }
-    });
+    }, { passive: false });
 
     window.addEventListener("pointerup", () => { pointerStartY = null; });
+    window.addEventListener("pointercancel", () => { pointerStartY = null; });
 
     window.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
@@ -1054,19 +1416,26 @@
     });
 
     document.addEventListener("visibilitychange", () => {
-      if (document.hidden) { videoEntries.forEach((entry) => pauseVideo(entry)); }
+      if (document.hidden) {
+        videoEntries.forEach((entry) => pauseVideo(entry));
+      } else {
+        requestVideoManagement(true);
+      }
     });
 
     render();
     
     const preloaderStartedAt = performance.now();
-    Promise.allSettled([ warmVideoCache(), prepareInitialVisibleVideos() ]).finally(() => {
+    Promise.allSettled([ waitForInitialImages() ]).finally(() => {
       const elapsed = performance.now() - preloaderStartedAt;
       const remaining = Math.max(0, CONFIG.preloaderMinimumMs - elapsed);
 
       window.setTimeout(() => {
         hidePreloader();
-        window.setInterval(() => { manageVideos(false); }, CONFIG.retryIntervalMs);
+        requestVideoManagement(true);
+        warmVideoCache();
+        prepareInitialVisibleVideos();
+        window.setInterval(() => { requestVideoManagement(false); }, CONFIG.retryIntervalMs);
         requestRender();
       }, remaining);
     });
